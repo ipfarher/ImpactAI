@@ -1,10 +1,10 @@
 [app]
 
 # (str) Title of your application
-title = Python Brasil 2017
+title = Impact AI
 
 # (str) Package name
-package.name = pybr
+package.name = IAI
 
 # (str) Package domain (needed for android/ios packaging)
 package.domain = org.pybr

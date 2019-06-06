@@ -35,9 +35,9 @@ common_widgets = '''
 '''
 
 
-Builder.load_string(base_schedule_screen.format(class_name='SpeechScreen', screen_name='speech', widgets=common_widgets))
-Builder.load_string(base_schedule_screen.format(class_name='TutorialScreen', screen_name='tutorial', widgets=common_widgets))
-Builder.load_string(base_schedule_screen.format(class_name='SprintScreen', screen_name='sprint', widgets=common_widgets))
+Builder.load_string(base_schedule_screen.format(class_name='StartScreen', screen_name='Start', widgets=common_widgets))
+Builder.load_string(base_schedule_screen.format(class_name='HistoryScreen', screen_name='History', widgets=common_widgets))
+# Builder.load_string(base_schedule_screen.format(class_name='SprintScreen', screen_name='sprint', widgets=common_widgets))
 
 
 class IconLeftSampleWidget(ILeftBodyTouch, MDIconButton):
@@ -162,13 +162,13 @@ class ScheduleScreen(Screen):
         self.ids.spinner.active = False
 
 
-class SpeechScreen(ScheduleScreen):
+class StartScreen(ScheduleScreen):
     schedule_range = (6, 9)
 
 
-class TutorialScreen(ScheduleScreen):
+class HistoryScreen(ScheduleScreen):
     schedule_range = (9, 11)
 
 
-class SprintScreen(ScheduleScreen):
-    schedule_range = (11, 12)
+# class SprintScreen(ScheduleScreen):
+#     schedule_range = (11, 12)

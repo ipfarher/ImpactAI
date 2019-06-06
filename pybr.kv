@@ -9,9 +9,8 @@
 #:import ThreeLineListItem kivymd.list.ThreeLineListItem
 #:import ut utils
 #:import AboutScreen screens
-#:import SpeechScreen screens
-#:import TutorialScreen screens
-#:import SprintsScreen screens
+#:import StartScreen screens
+#:import HistoryScreen screens
 #:import SponsorsScreen screens
 
 NavigationLayout:
@@ -22,30 +21,26 @@ NavigationLayout:
             title: 'Menu'
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
-            text: 'Sobre'
+            text: 'About'
             on_release: app.root.ids.scr_mngr.current = 'about'
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
-            text: 'Palestras'
-            on_release: app.root.ids.scr_mngr.current = 'speech'
+            text: 'Start'
+            on_release: app.root.ids.scr_mngr.current = 'Start'
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
-            text: 'Tutoriais'
-            on_release: app.root.ids.scr_mngr.current = 'tutorial'
+            text: 'History'
+            on_release: app.root.ids.scr_mngr.current = 'History'
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
-            text: 'Sprints'
-            on_release: app.root.ids.scr_mngr.current = 'sprint'
-        NavigationDrawerIconButton:
-            icon: 'arrow-right-drop-circle'
-            text: 'Patrocinadores'
+            text: 'Companies'
             on_release: app.root.ids.scr_mngr.current = 'sponsors'
 
     BoxLayout:
         orientation: 'vertical'
         Toolbar:
             id: toolbar
-            title: 'Python Brasil 2017'
+            title: 'Impact AI'
             md_bg_color: app.theme_cls.primary_color
             background_palette: 'Primary'
             background_hue: '500'
@@ -53,7 +48,6 @@ NavigationLayout:
         ScreenManager:
             id: scr_mngr
             AboutScreen:
-            SpeechScreen:
-            TutorialScreen:
-            SprintScreen:
+            StartScreen:
+            HistoryScreen:
             SponsorsScreen:
