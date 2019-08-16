@@ -13,7 +13,8 @@ package.domain = org.pybr
 source.dir = .
 
 # (list) Source files to include (let empty to include all the files)
-source.include_exts = py,png,jpg,kv,atlas,vs,fs,json,gif
+#source.include_exts = py,png,jpg,kv,atlas,vs,fs,json,gif
+source.include_exts =
 
 # (list) List of inclusions using pattern matching
 #source.include_patterns = assets/*,images/*.png
@@ -28,15 +29,15 @@ source.include_exts = py,png,jpg,kv,atlas,vs,fs,json,gif
 #source.exclude_patterns = license,images/*/*.jpg
 
 # (str) Application versioning (method 1)
-version = 0.3
+# version = 0.3
 
 # (str) Application versioning (method 2)
-# version.regex = __version__ = ['"](.*)['"]
-# version.filename = %(source.dir)s/main.py
+version.regex = __version__ = ['"](.*)['"]
+version.filename = %(source.dir)s/main.py
 
 # (list) Application requirements
 # comma seperated e.g. requirements = sqlite3,kivy
-requirements = kivy,git+https://gitlab.com/kivymd/KivyMD.git
+requirements = kivy,git+https://gitlab.com/kivymd/KivyMD.git,python2
 
 # (str) Custom source folders for requirements
 # Sets custom source for any requirements with recipes
@@ -46,7 +47,7 @@ requirements = kivy,git+https://gitlab.com/kivymd/KivyMD.git
 #garden_requirements =
 
 # (str) Presplash of the application
-presplash.filename = %(source.dir)s/data/assets/splash.png
+#presplash.filename = %(source.dir)s/data/assets/splash.png
 
 # (str) Icon of the application
 icon.filename = %(source.dir)s/data/assets/icon.png
@@ -227,7 +228,7 @@ warn_on_root = 1
 
 #    -----------------------------------------------------------------------------
 #    List as sections
-#
+#   
 #    You can define all the "list" as [section:key].
 #    Each line will be considered as a option to the list.
 #    Let's take [app] / source.exclude_patterns.
