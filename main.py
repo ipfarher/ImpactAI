@@ -1,121 +1,105 @@
 __version__ = "1.0"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import threading  
 from kivy.app import App
+# from kivy.uix.boxlayout import BoxLayout
 from kivymd.theming import ThemeManager
 import uuid
 
 import paho.mqtt.client as mqtt
 import config_mqtt
-import threading
-from threading import Thread
 import ast
 import Queue
+import re
+import time
+
+q = Queue.Queue(maxsize=20)
+empiric_time_diff = 3000
 
 
-bump = 0
-somthing_detected = False
-empiric_time_diff = 1500
-msg_eval = {}
-go_process = False
-
-q = Queue.Queue() #initialises a first in first out queue
-
-def process_data(mqtt_message_rx):
+def process_data(q):
     global bump, somthing_detected,empiric_time_diff
+    current_time_stamp = 0
+    preview_time_stamp = 0
+    preview_event_type = ""
+    second_q_element = False
+    bump = 0
 
     while True:
-        if not q.empty(): #check if the queue is empty
-            mqtt_message_rx2 = q.get()  #get the first message which was received and delete
-            print('########################queue message: ###############################', mqtt_message_rx2)
-            if somthing_detected == True:
-                if 'AI_RULE' in mqtt_message_rx2.values() or 'SMART_RULE' in mqtt_message_rx2.values():
-                    current_time_stamp = mqtt_message_rx2.get('triggeredTimestamp')
-                    if mqtt_message_rx2.get('type') != preview_event_type:
+        while not q.empty():
+            mqtt_message_rx = q.get()  #get the first message which was received and delete
+            mqtt_msg_dict = ast.literal_eval(mqtt_message_rx)
+            
+            if second_q_element == True:
+                second_q_element = False
+                
+                if 'AI_RULE' in mqtt_msg_dict.values() or 'SMART_RULE' in mqtt_msg_dict.values():
+                    current_time_stamp = mqtt_msg_dict.get('triggeredTimestamp')
+                    print("current_time_stamp", current_time_stamp)
+                    
+                    if mqtt_msg_dict.get('type') != preview_event_type:
+                        print('current_time_stamp - preview_time_stamp = ', current_time_stamp - preview_time_stamp)
                         if abs(current_time_stamp - preview_time_stamp) < empiric_time_diff:
                             bump = bump + 1
-                            print('BUMP = ', bump)
-
+                            print('BUMP DETECTED = ', bump)
                 else: 
                     print('An event different than AI_RULE or SMART_RULE was detected')
-                    somthing_detected = False
+                    second_q_element = False
+            
             else:
-                if 'AI_RULE' in mqtt_message_rx2.values() or 'SMART_RULE' in mqtt_message_rx2.values():
-                    preview_time_stamp = mqtt_message_rx2.get('triggeredTimestamp')
-                    preview_event_type = mqtt_message_rx2.get('type')
-                    somthing_detected = True
+                if 'AI_RULE' in mqtt_msg_dict.values() or 'SMART_RULE' in mqtt_msg_dict.values():
+                    preview_time_stamp = mqtt_msg_dict.get('triggeredTimestamp')
+                    preview_event_type = mqtt_msg_dict.get('type')
+                    second_q_element = True
 
                 else:
-                    somthing_detected = False
+                    second_q_element = False
 
         
-class PybrApp(App, threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-    
+# class PybrApp(App):
+#     # theme_cls = ThemeManager()
+#     Thread()
+#     # def build(self):
+#     #     # self.load_kv('thread.kv')
+#     #     return Thread()
+
+
+class PybrApp(App):
     theme_cls = ThemeManager()
-    
-    def on_start(self):
-        def on_connect(client, userdata, flags, rc):
+    def on_connect(client, userdata, flags, rc):
             print('Connected with result code {code}'.format(code=rc))
 
+    def on_message(client, userdata, msg):
+        global msg_eval
+        global go_process
+        global bump, somthing_detected,empiric_time_diff
+        preview_event_type = "SMART_RULE"
 
-        def on_message(client, userdata, msg):
-            global msg_eval
-            global go_process
-            global q
-            mqtt_message_rx = 'Msg received from topic={topic}\n{content}'.format(topic=msg.topic, content=str(msg.payload))
-            print('Msg received from topic={topic}\n{content}'.format(topic=msg.topic, content=str(msg.payload)))
-            q.put(("{'" + str(message.payload) + "', " + str(message.topic) + "}"))
-            # save_data(mqtt_message_rx)
-            # process_data(mqtt_message_rx)
-            # m_decode=msg.payload.decode("utf-8","ignore")
-            msg_eval = ast.literal_eval(content)
-            go_process = True
-            # thread.start_new_thread( process_data, (ast.literal_eval(msg.payload), ) )
-            # process_data(msg_eval)
+        # mqtt_msg = '{"id":"5d5dc7f70eeebf00015ae982","type":"AI_RULE","triggeredTimestamp":1566427122705,"datasource":null,"condition":null,"value":null,"datasourceUnits":null,"triggeredValue":null,"motionTypeName":"bump","motionTypeCode":0,"patternId":null,"patternName":null,"anomalyType":null,"ruleId":"72753ed1-c6e2-485a-803d-6c58f01d3231","projectId":747,"projectName":"Impacto","deviceId":"TO136-0202100001000A8C","deviceName":"AI Module","receivedAt":1566427127783}'
+        mqtt_msg2 = re.sub(r"null", "\"null\"", msg.payload)
+        # print(mqtt_msg2)
+        q.put(mqtt_msg2)
+    
+    client = mqtt.Client(client_id=str(uuid.uuid4()), transport='websockets')
+    client.on_connect = on_connect
+    client.on_message = on_message
 
-        # def connect():
-        #     client = mqtt.Client(client_id=str(uuid.uuid4()), transport='websockets')
-        #     client.on_connect = on_connect
-        #     client.on_message = on_message
+    # client.tls_set(ca_certs = config_mqtt.ca_cert_path) # works for Python3
+    client.tls_set('/home/ivan/kivyBrasilApp/pybrapp/cacert.crt') # For python2.7
+    # client.tls_set('/kivy/pybrapp/cacert.crt') # For python2.7
+    client.username_pw_set(config_mqtt.mqtt_user_name, config_mqtt.mqtt_password)
 
-        #     client.tls_set(ca_certs = config_mqtt.ca_cert_path)
-        #     client.username_pw_set(config_mqtt.mqtt_user_name, config_mqtt.mqtt_password)
+    client.connect('ns01-wss.brainium.com', 443)
+    # client.loop_start() #start loop to process received messages
+    client.subscribe(config_mqtt.alerts_topic)
+    # client.subscribe(config_mqtt.acc_norm_datasource_topic)
 
-        #     client.connect('ns01-wss.brainium.com', 443)
-        #     # client.loop_start() #start loop to process received messages
-        #     client.subscribe(config_mqtt.alerts_topic)
-        #     # client.subscribe(config_mqtt.acc_norm_datasource_topic)
+    # client.loop_forever()
+    client.loop_start()
 
-        #     client.loop_forever()
-        
-        client = mqtt.Client(client_id=str(uuid.uuid4()), transport='websockets')
-        client.on_connect = on_connect
-        client.on_message = on_message
-
-        # client.tls_set(ca_certs = config_mqtt.ca_cert_path) # works for Python3
-        client.tls_set('/home/ivan/kivyBrasilApp/pybrapp/cacert.crt') # For python2.7
-        # client.tls_set('/kivy/pybrapp/cacert.crt') # For python2.7
-        client.username_pw_set(config_mqtt.mqtt_user_name, config_mqtt.mqtt_password)
-
-        client.connect('ns01-wss.brainium.com', 443)
-        # client.loop_start() #start loop to process received messages
-        client.subscribe(config_mqtt.alerts_topic)
-        # client.subscribe(config_mqtt.acc_norm_datasource_topic)
-
-        # client.loop_forever()
-        client.loop_start()
 
 if __name__ == "__main__":
-
-    # worker = Thread(target=downloadEnclosures, args=(i, enclosure_queue,))
-    # worker.setDaemon(True)
-    # worker.start()
-    process_data = Thread(target=process_data, args=(msg_eval,))
-    # process_data = thread.start_new_thread( process_data, (msg_eval, ) )
-    process_data.setDaemon(True)
-    process_data.start()
-    # PybrApp().run()
-    threadapp = PybrApp().run()
-    threadapp.start()
+    threading.Thread(target = process_data, args=(q,)).start()
+    PybrApp().run()
+  
