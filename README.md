@@ -1,4 +1,4 @@
-======================
+
 Impact AI Mobile Aplication was created based on PyBr Aplication
 ======================
 
