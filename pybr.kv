@@ -9,9 +9,9 @@
 #:import ThreeLineListItem kivymd.list.ThreeLineListItem
 #:import ut utils
 #:import AboutScreen screens
-#:import StartScreen screens
 #:import HistoryScreen screens
 #:import SponsorsScreen screens
+#:import startcountScreen screens
 
 NavigationLayout:
     id: nav_layout
@@ -26,7 +26,7 @@ NavigationLayout:
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
             text: 'Start'
-            on_release: app.root.ids.scr_mngr.current = 'Start'
+            on_release: app.root.ids.scr_mngr.current = 'startcount'
         NavigationDrawerIconButton:
             icon: 'arrow-right-drop-circle'
             text: 'History'
@@ -48,6 +48,6 @@ NavigationLayout:
         ScreenManager:
             id: scr_mngr
             AboutScreen:
-            StartScreen:
             HistoryScreen:
+            startcountScreen:
             SponsorsScreen:

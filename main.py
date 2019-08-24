@@ -1,6 +1,9 @@
 __version__ = "1.0"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '/home/ivan/kivyBrasilApp/pybrapp/screens')
 import threading  
 from kivy.app import App
 # from kivy.uix.boxlayout import BoxLayout
@@ -13,9 +16,15 @@ import ast
 import Queue
 import re
 import time
+from startcount import update_bumps
 
 q = Queue.Queue(maxsize=20)
 empiric_time_diff = 3000
+bump = 8
+
+def get_bumps():
+    global bump
+    return bump
 
 
 def process_data(q):
@@ -24,7 +33,7 @@ def process_data(q):
     preview_time_stamp = 0
     preview_event_type = ""
     second_q_element = False
-    bump = 0
+
 
     while True:
         while not q.empty():
@@ -42,7 +51,9 @@ def process_data(q):
                         print('current_time_stamp - preview_time_stamp = ', current_time_stamp - preview_time_stamp)
                         if abs(current_time_stamp - preview_time_stamp) < empiric_time_diff:
                             bump = bump + 1
+                            update_bumps(bump)
                             print('BUMP DETECTED = ', bump)
+                            strbump = str(bump)
                 else: 
                     print('An event different than AI_RULE or SMART_RULE was detected')
                     second_q_element = False
@@ -79,7 +90,7 @@ class PybrApp(App):
         # mqtt_msg = '{"id":"5d5dc7f70eeebf00015ae982","type":"AI_RULE","triggeredTimestamp":1566427122705,"datasource":null,"condition":null,"value":null,"datasourceUnits":null,"triggeredValue":null,"motionTypeName":"bump","motionTypeCode":0,"patternId":null,"patternName":null,"anomalyType":null,"ruleId":"72753ed1-c6e2-485a-803d-6c58f01d3231","projectId":747,"projectName":"Impacto","deviceId":"TO136-0202100001000A8C","deviceName":"AI Module","receivedAt":1566427127783}'
         mqtt_msg2 = re.sub(r"null", "\"null\"", msg.payload)
         # print(mqtt_msg2)
-        q.put(mqtt_msg2)
+        q.put(mqtt_msg2)    
     
     client = mqtt.Client(client_id=str(uuid.uuid4()), transport='websockets')
     client.on_connect = on_connect

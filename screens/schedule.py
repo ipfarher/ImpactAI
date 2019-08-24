@@ -35,7 +35,7 @@ common_widgets = '''
 '''
 
 
-Builder.load_string(base_schedule_screen.format(class_name='StartScreen', screen_name='Start', widgets=common_widgets))
+# Builder.load_string(base_schedule_screen.format(class_name='StartScreen', screen_name='Start', widgets=common_widgets))
 Builder.load_string(base_schedule_screen.format(class_name='HistoryScreen', screen_name='History', widgets=common_widgets))
 # Builder.load_string(base_schedule_screen.format(class_name='SprintScreen', screen_name='sprint', widgets=common_widgets))
 
@@ -122,7 +122,7 @@ class Track(TwoLineIconListItem):
 
 class ScheduleScreen(Screen):
     schedule_range = tuple()
-    base_tab_name = '{:02d}_10_2017'
+    base_tab_name = '{:02d}_08_2019'
 
     def __init__(self, *args, **kwargs):
         super(ScheduleScreen, self).__init__(*args, **kwargs)
@@ -162,8 +162,8 @@ class ScheduleScreen(Screen):
         self.ids.spinner.active = False
 
 
-class StartScreen(ScheduleScreen):
-    schedule_range = (6, 9)
+# class StartScreen(ScheduleScreen):
+#     schedule_range = (6, 7)
 
 
 class HistoryScreen(ScheduleScreen):
