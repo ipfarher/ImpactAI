@@ -1,3 +1,23 @@
+======================
+Impact AI Mobile Aplication was created based on PyBr Aplication
+======================
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Python Brasil Kivy App
 ======================
 
