@@ -21,15 +21,6 @@ Impact AI Mobile Aplication was created based on PyBr Aplication
 Python Brasil Kivy App
 ======================
 
-Python Brasil Mobile App powered by Kivy
-
-## Screenshots
-
-
-| Initial screen  | Menu              | Schedule          |
-| --------------- | ----------------- | ----------------- |
-| ![](img/ss1.png)|  ![](img/ss2.png) | ![](img/ss3.png)  |
-
 
 ## Installing and running
 
