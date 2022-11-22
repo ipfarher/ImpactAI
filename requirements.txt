@@ -1,4 +1,4 @@
 Kivy==1.10.0
-Pillow==4.3.0
+Pillow==9.3.0
 git+https://gitlab.com/kivymd/KivyMD
 pygame==1.9.3
